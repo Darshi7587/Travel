@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="WanderWise helps travelers discover personalized destination recommendations for beaches, temples, and cities."
+    />
+    <title>WanderWise | Discover Your Next Adventure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="#home" aria-label="WanderWise home">
+          <span class="brand-mark">W</span>
+          <span class="brand-text">WanderWise</span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="nav-menu" id="nav-menu">
+          <a class="nav-link active" href="#home">Home</a>
+          <a class="nav-link" href="#about">About</a>
+          <a class="nav-link" href="#contact">Contact Us</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <div class="hero-text">
+            <p class="eyebrow">Travel. Discover. Repeat.</p>
+            <h1>Discover the World, Your Way</h1>
+            <p class="hero-subtitle">
+              Find extraordinary destinations, hidden gems, and unforgettable
+              experiences tailored to your travel interests.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-btn" href="#destinations">Explore Destinations</a>
+            </div>
+            <div class="popular-tags" aria-label="Popular destination suggestions">
+              <span>Popular:</span>
+              <button type="button" class="tag-btn" data-search="Bali">Bali</button>
+              <button type="button" class="tag-btn" data-search="Paris">Paris</button>
+              <button type="button" class="tag-btn" data-search="Beach destinations">Beach destinations</button>
+              <button type="button" class="tag-btn" data-search="Historical temples">Historical temples</button>
+            </div>
+          </div>
+
+          <div class="search-panel" aria-label="Travel search panel">
+            <form id="search-form" novalidate>
+              <div class="panel-header">
+                <h2>Plan your next escape</h2>
+              </div>
+
+              <div class="category-picker" aria-label="Select destination category">
+                <button type="button" class="category-btn active" data-category="all">All</button>
+                <button type="button" class="category-btn" data-category="beaches">Beaches</button>
+                <button type="button" class="category-btn" data-category="temples">Temples</button>
+                <button type="button" class="category-btn" data-category="cities">Cities</button>
+              </div>
+
+              <div class="field-group">
+                <label for="destination-search">Destination or location</label>
+                <input
+                  id="destination-search"
+                  name="destination-search"
+                  type="text"
+                  placeholder="Try: Toronto, Canada or Bali"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="field-group">
+                <label for="travel-notes">Travel interests (optional)</label>
+                <textarea
+                  id="travel-notes"
+                  name="travel-notes"
+                  rows="3"
+                  placeholder="Famous beaches in India, historical temples, vibrant city culture..."
+                ></textarea>
+              </div>
+
+              <div class="search-actions">
+                <button type="submit" class="primary-btn search-btn">Search</button>
+                <button type="button" class="secondary-btn" id="clear-search">Clear</button>
+              </div>
+
+              <p id="search-feedback" class="search-feedback" aria-live="polite"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="intro container">
+        <div class="intro-card">
+          <div class="intro-icon">
+            <i class="fa-solid fa-route"></i>
+          </div>
+          <div>
+            <h3>Personalized travel discovery</h3>
+            <p>
+              WanderWise curates recommendations based on your interests so every trip begins
+              with inspiration and ends with a memorable story.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="destinations-section" id="destinations">
+        <div class="container">
+          <div class="section-heading">
+            <p class="section-tag">Curated picks</p>
+            <h2>Recommended destinations</h2>
+          </div>
+
+          <div class="results-toolbar">
+            <div class="filter-group" aria-label="Search filters">
+              <button type="button" class="filter-btn active" data-filter="all">All</button>
+              <button type="button" class="filter-btn" data-filter="beaches">Beaches</button>
+              <button type="button" class="filter-btn" data-filter="temples">Temples</button>
+              <button type="button" class="filter-btn" data-filter="cities">Cities</button>
+              <button type="button" class="filter-btn" data-filter="favorites">Favorites</button>
+            </div>
+          </div>
+
+          <div id="results-status" class="results-status" aria-live="polite"></div>
+          <div id="destinations-grid" class="destinations-grid" aria-live="polite"></div>
+          <div id="empty-state" class="empty-state" hidden>
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <h3>No destinations match your search.</h3>
+            <p>Try a different destination, location, or travel keyword.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section" id="about">
+        <div class="container">
+          <div class="section-heading">
+            <p class="section-tag">About us</p>
+            <h2>Making Every Journey Meaningful</h2>
+          </div>
+
+          <div class="about-block">
+            <div class="about-copy">
+              <p>
+                WanderWise helps travelers discover destinations through personalized
+                recommendations, reliable travel insight, and inspiring destination guides.
+                Our mission is simple: make planning easier, travel more meaningful, and every
+                trip feel like the right one.
+              </p>
+              <p>
+                We believe in thoughtful discovery, responsible tourism, and creating journeys
+                that leave a positive impact on people, places, and cultures. Every destination
+                we feature is chosen to spark curiosity and create unforgettable experiences.
+              </p>
+            </div>
+          </div>
+
+          <div class="team-grid" aria-label="Team members">
+            <article class="team-card">
+              <img
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=80"
+                alt="Portrait of Aisha Sharma"
+                loading="lazy"
+              />
+              <div class="team-content">
+                <h3>Aisha Sharma</h3>
+                <p class="team-role">Head of Discovery</p>
+                <p>Designs immersive travel ideas and experience-first itineraries.</p>
+                <span>Expertise: Curated travel experiences</span>
+              </div>
+            </article>
+
+            <article class="team-card">
+              <img
+                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=80"
+                alt="Portrait of Daniel Brooks"
+                loading="lazy"
+              />
+              <div class="team-content">
+                <h3>Daniel Brooks</h3>
+                <p class="team-role">Destination Strategist</p>
+                <p>Builds destination intelligence and travel trends for adventure seekers.</p>
+                <span>Expertise: Market research and recommendations</span>
+              </div>
+            </article>
+
+            <article class="team-card">
+              <img
+                src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=700&q=80"
+                alt="Portrait of Priya Nair"
+                loading="lazy"
+              />
+              <div class="team-content">
+                <h3>Priya Nair</h3>
+                <p class="team-role">Community Manager</p>
+                <p>Helps travelers connect with authentic stories, local culture, and inspiration.</p>
+                <span>Expertise: Community engagement</span>
+              </div>
+            </article>
+
+            <article class="team-card">
+              <img
+                src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=700&q=80"
+                alt="Portrait of Liam Carter"
+                loading="lazy"
+              />
+              <div class="team-content">
+                <h3>Liam Carter</h3>
+                <p class="team-role">Technology Lead</p>
+                <p>Creates intuitive digital tools that make trip planning simple and delightful.</p>
+                <span>Expertise: Product design and implementation</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="timeline" aria-label="Company journey timeline">
+            <div class="timeline-item">
+              <span class="timeline-year">2022</span>
+              <p>The idea for WanderWise was conceived as a simpler way to explore meaningful trips.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-year">2023</span>
+              <p>The first destination discovery prototype was launched for early travelers.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-year">2024</span>
+              <p>Personalized travel recommendations were introduced to match travel interests.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-year">2025</span>
+              <p>The destination database expanded internationally to cover more regions and styles.</p>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-year">2026</span>
+              <p>The platform introduced enhanced discovery features and an improved user journey.</p>
+            </div>
+          </div>
+
+          <div class="values-grid" aria-label="Our values">
+            <article class="value-card">
+              <i class="fa-solid fa-compass-drafting"></i>
+              <h3>Personalized Discovery</h3>
+              <p>Travel suggestions shaped around each traveler’s interests and preferred pace.</p>
+            </article>
+            <article class="value-card">
+              <i class="fa-solid fa-leaf"></i>
+              <h3>Responsible Tourism</h3>
+              <p>We encourage thoughtful travel that respects local communities and environments.</p>
+            </article>
+            <article class="value-card">
+              <i class="fa-solid fa-universal-access"></i>
+              <h3>Accessibility</h3>
+              <p>We design intuitive journeys that are welcoming and usable for many travelers.</p>
+            </article>
+            <article class="value-card">
+              <i class="fa-solid fa-landmark"></i>
+              <h3>Authentic Experiences</h3>
+              <p>We focus on destinations that reveal genuine culture, beauty, and memorable stories.</p>
+            </article>
+          </div>
+
+          <div class="office-section">
+            <div class="section-heading left">
+              <p class="section-tag">Sample locations</p>
+              <h2>Office locations</h2>
+            </div>
+            <p class="office-note">
+              These sample office locations are illustrative and not claimed to be active company offices.
+            </p>
+            <div id="office-map" aria-label="Map showing sample office locations"></div>
+            <div id="map-fallback" class="map-fallback" hidden>
+              <p>The map could not load. Please check your internet connection and try again.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact-section" id="contact">
+        <div class="container">
+          <div class="contact-header">
+            <p class="section-tag">Contact</p>
+            <h2>Let&apos;s Plan Something Amazing</h2>
+            <p>
+              Share your dream trip, ideal getaway, or travel inspiration and we&apos;ll help you find the next perfect destination.
+            </p>
+          </div>
+
+          <div class="contact-layout">
+            <form id="contact-form" class="contact-form" novalidate>
+              <div class="form-field">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" aria-describedby="name-error" />
+                <span class="error-message" id="name-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" aria-describedby="email-error" />
+                <span class="error-message" id="email-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="subject">Subject</label>
+                <input id="subject" name="subject" type="text" aria-describedby="subject-error" />
+                <span class="error-message" id="subject-error" aria-live="polite"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" aria-describedby="message-error"></textarea>
+                <span class="error-message" id="message-error" aria-live="polite"></span>
+              </div>
+
+              <button type="submit" class="primary-btn contact-btn">Send message</button>
+              <p id="contact-success" class="contact-success" aria-live="polite"></p>
+            </form>
+
+            <div class="contact-info">
+              <div class="info-card">
+                <i class="fa-solid fa-envelope"></i>
+                <div>
+                  <h3>Email</h3>
+                  <a href="mailto:hello@wanderwise.example">hello@wanderwise.example</a>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <i class="fa-solid fa-location-dot"></i>
+                <div>
+                  <h3>Location</h3>
+                  <p>Bengaluru, India</p>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <i class="fa-solid fa-clock"></i>
+                <div>
+                  <h3>Response window</h3>
+                  <p>Within 1–2 business days</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <div class="brand-footer">
+            <span class="brand-mark">W</span>
+            <span class="brand-text">WanderWise</span>
+          </div>
+          <p>
+            Personalized destination inspiration for travelers who want meaningful, memorable adventures.
+          </p>
+        </div>
+
+        <div>
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+            <li><a href="#destinations">Destinations</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Categories</h3>
+          <ul>
+            <li><a href="#destinations" data-category-link="beaches">Beaches</a></li>
+            <li><a href="#destinations" data-category-link="temples">Temples</a></li>
+            <li><a href="#destinations" data-category-link="cities">Cities</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Follow Us</h3>
+          <div class="social-links" aria-label="Social media links">
+            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="X / Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="container footer-bottom-inner">
+          <p>© 2026 WanderWise. All rights reserved.</p>
+          <button type="button" class="back-to-top" id="back-to-top" aria-label="Back to top">↑</button>
+        </div>
+      </div>
+    </footer>
+
+    <div class="modal" id="destination-modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button type="button" class="modal-close" aria-label="Close destination details">×</button>
+        <div class="modal-image-wrap">
+          <img id="modal-image" src="" alt="" />
+        </div>
+        <div class="modal-content">
+          <div class="modal-header-row">
+            <div>
+              <p class="modal-category" id="modal-category"></p>
+              <h3 id="modal-title"></h3>
+            </div>
+            <button type="button" class="modal-favorite-btn" id="modal-favorite-btn" aria-label="Add to favorites">
+              <i class="fa-regular fa-heart"></i>
+            </button>
+          </div>
+
+          <p id="modal-location" class="modal-location"></p>
+          <p id="modal-description" class="modal-description"></p>
+
+          <div class="modal-grid">
+            <div>
+              <h4>Best time to visit</h4>
+              <p id="modal-best-time"></p>
+            </div>
+            <div>
+              <h4>Local time</h4>
+              <p id="modal-local-time">Time unavailable</p>
+            </div>
+          </div>
+
+          <div class="modal-section">
+            <h4>Major attractions</h4>
+            <ul id="modal-attractions" class="modal-list"></ul>
+          </div>
+
+          <div class="modal-section">
+            <h4>Popular activities</h4>
+            <ul id="modal-activities" class="modal-list"></ul>
+          </div>
+
+          <div class="modal-section">
+            <h4>Travel tips</h4>
+            <ul id="modal-tips" class="modal-list"></ul>
+          </div>
+
+          <div class="modal-section">
+            <h4>Location</h4>
+            <a id="modal-map-link" href="#" target="_blank" rel="noreferrer">Open map</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
