@@ -1,4 +1,4 @@
-import { DESTINATIONS, CATEGORIES } from './data.js';
+import { DESTINATIONS } from './data.js';
 import { filterDestinations, renderStatusMessage } from './search.js';
 import { renderDestinationGrid, openDestinationModal, getDestinationTime } from './destinations.js';
 import { loadFavorites, toggleFavorite, isFavorite } from './favorites.js';
@@ -8,6 +8,7 @@ import { initializeMap } from './map.js';
 const state = {
   category: 'all',
   query: '',
+  notes: '',
   favoriteOnly: false,
   favorites: new Set(loadFavorites()),
 };
@@ -33,11 +34,13 @@ function updateCategoryButtons() {
   categoryButtons.forEach((button) => {
     const isActive = button.dataset.category === state.category;
     button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
   });
 
   filterButtons.forEach((button) => {
     const isActive = button.dataset.filter === (state.favoriteOnly ? 'favorites' : state.category);
     button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
   });
 
   navLinks.forEach((link) => {
@@ -48,7 +51,7 @@ function updateCategoryButtons() {
 }
 
 function renderResults() {
-  const combinedQuery = [state.query, travelNotes ? travelNotes.value.trim() : '']
+  const combinedQuery = [state.query, state.notes]
     .filter(Boolean)
     .join(' ');
 
@@ -99,12 +102,6 @@ function renderResults() {
   updateCategoryButtons();
 }
 
-function setSearchState(nextCategory) {
-  state.category = nextCategory;
-  state.favoriteOnly = false;
-  renderResults();
-}
-
 function attachNavigation() {
   if (navToggle && navMenu) {
     navToggle.addEventListener('click', () => {
@@ -142,7 +139,7 @@ function attachSearchListeners() {
   if (searchForm) {
     searchForm.addEventListener('submit', (event) => {
       event.preventDefault();
-      const inputValue = searchInput.value.trim();
+      const inputValue = searchInput ? searchInput.value.trim() : '';
       const notesValue = travelNotes ? travelNotes.value.trim() : '';
       const combinedInput = [inputValue, notesValue].filter(Boolean).join(' ');
 
@@ -153,11 +150,12 @@ function attachSearchListeners() {
         return;
       }
 
+      state.query = inputValue;
+      state.notes = notesValue;
+      state.favoriteOnly = false;
       if (searchFeedback) {
         searchFeedback.textContent = 'Showing tailored destinations based on your search.';
       }
-
-      state.query = inputValue;
       renderResults();
     });
   }
@@ -165,6 +163,7 @@ function attachSearchListeners() {
   if (clearSearchButton) {
     clearSearchButton.addEventListener('click', () => {
       state.query = '';
+      state.notes = '';
       state.category = 'all';
       state.favoriteOnly = false;
       if (searchInput) searchInput.value = '';
@@ -178,6 +177,7 @@ function attachSearchListeners() {
     button.addEventListener('click', () => {
       const nextCategory = button.dataset.category;
       state.query = searchInput ? searchInput.value.trim() : '';
+      state.notes = travelNotes ? travelNotes.value.trim() : '';
       state.category = nextCategory || 'all';
       state.favoriteOnly = false;
       renderResults();
@@ -187,6 +187,8 @@ function attachSearchListeners() {
   filterButtons.forEach((button) => {
     button.addEventListener('click', () => {
       const filter = button.dataset.filter;
+      state.query = searchInput ? searchInput.value.trim() : '';
+      state.notes = travelNotes ? travelNotes.value.trim() : '';
       if (filter === 'favorites') {
         state.favoriteOnly = true;
         state.category = 'all';
@@ -205,6 +207,7 @@ function attachSearchListeners() {
         searchInput.value = term;
       }
       state.query = term;
+      state.notes = travelNotes ? travelNotes.value.trim() : '';
       renderResults();
       if (searchFeedback) {
         searchFeedback.textContent = 'Popular suggestion applied.';
@@ -271,8 +274,4 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeMap();
   initializeTimeUpdates();
   renderResults();
-});
-
-CATEGORIES.forEach((category) => {
-  if (category.key === 'all') return;
 });

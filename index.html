@@ -50,7 +50,7 @@
 
         <div class="nav-menu" id="nav-menu">
           <a class="nav-link active" href="#home">Home</a>
-          <a class="nav-link" href="#about">About</a>
+          <a class="nav-link" href="#about">About Us</a>
           <a class="nav-link" href="#contact">Contact Us</a>
         </div>
       </nav>
@@ -79,10 +79,10 @@
             </div>
           </div>
 
-          <div class="search-panel" aria-label="Travel search panel">
-            <form id="search-form" novalidate>
+          <section class="search-panel" aria-labelledby="search-heading">
+            <form id="search-form" role="search" aria-labelledby="search-heading" novalidate>
               <div class="panel-header">
-                <h2>Plan your next escape</h2>
+                <h2 id="search-heading">Find your next destination</h2>
               </div>
 
               <div class="category-picker" aria-label="Select destination category">
@@ -100,6 +100,7 @@
                   type="text"
                   placeholder="Try: Toronto, Canada or Bali"
                   autocomplete="off"
+                  aria-label="Search destinations, cities, countries, or travel interests"
                 />
               </div>
 
@@ -114,13 +115,13 @@
               </div>
 
               <div class="search-actions">
-                <button type="submit" class="primary-btn search-btn">Search</button>
-                <button type="button" class="secondary-btn" id="clear-search">Clear</button>
+                <button type="submit" class="primary-btn search-btn" aria-label="Search destinations">Search</button>
+                <button type="button" class="secondary-btn" id="clear-search" aria-label="Clear search">Clear</button>
               </div>
 
               <p id="search-feedback" class="search-feedback" aria-live="polite"></p>
             </form>
-          </div>
+          </section>
         </div>
       </section>
 
