@@ -136,6 +136,15 @@ function attachNavigation() {
 }
 
 function attachSearchListeners() {
+  if (searchInput && searchForm) {
+    searchInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        searchForm.requestSubmit();
+      }
+    });
+  }
+
   if (searchForm) {
     searchForm.addEventListener('submit', (event) => {
       event.preventDefault();

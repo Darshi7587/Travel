@@ -32,19 +32,21 @@ function getQueryDetails(query) {
   const normalized = normalizeText(query);
   const tokens = normalized.split(' ').filter(Boolean).map(singularizeToken);
   const hasToken = (...terms) => tokens.some((token) => terms.includes(token));
+  const beachTerms = ['beach', 'coast', 'coastal', 'shore', 'seaside'];
+  const templeTerms = ['temple', 'shrine', 'sacred'];
+  const countryTerms = ['country', 'international'];
   const intents = {
-    beaches: hasToken('beach', 'coast', 'coastal', 'shore', 'seaside'),
-    temples: hasToken('temple', 'shrine', 'sacred'),
-    countries: hasToken('country', 'international'),
+    beaches: hasToken(...beachTerms),
+    temples: hasToken(...templeTerms),
+    countries: hasToken(...countryTerms),
   };
+  const intentTerms = new Set([
+    ...(intents.beaches ? beachTerms : []),
+    ...(intents.temples ? templeTerms : []),
+    ...(intents.countries ? countryTerms : []),
+  ]);
   const meaningfulTokens = [...new Set(tokens.filter(
-    (token) => !SEARCH_STOP_WORDS.has(token) && !Object.entries(intents).some(([intent, matches]) =>
-      matches && (intent === 'beaches'
-        ? ['beach', 'coast', 'coastal', 'shore', 'seaside'].includes(token)
-        : intent === 'temples'
-          ? ['temple', 'shrine', 'sacred'].includes(token)
-          : ['country', 'international'].includes(token)),
-    ),
+    (token) => !SEARCH_STOP_WORDS.has(token) && !intentTerms.has(token),
   ))];
 
   return { normalized, tokens, intents, meaningfulTokens };
@@ -119,15 +121,21 @@ export function renderStatusMessage(element, destinations, query, category, favo
   if (!element) return;
 
   const total = destinations.length;
-  const categoryLabel = category === 'all' ? 'all destinations' : `${category} destinations`;
+  const categoryLabel = {
+    beaches: 'beach',
+    temples: 'temple',
+    cities: 'city',
+  }[category];
+  const resultLabel = categoryLabel ? `${categoryLabel} destinations` : 'destinations';
 
   if (query) {
-    element.textContent = `${total} matching ${categoryLabel} for “${query}”.`;
+    const scope = favoriteOnly ? 'favorite' : 'matching';
+    element.textContent = `${total} ${scope} ${resultLabel} for “${query}”.`;
     return;
   }
 
   if (favoriteOnly) {
-    element.textContent = `${total} favorite ${categoryLabel}.`;
+    element.textContent = `${total} favorite ${resultLabel}.`;
     return;
   }
 
@@ -136,5 +144,5 @@ export function renderStatusMessage(element, destinations, query, category, favo
     return;
   }
 
-  element.textContent = `${total} ${category} destinations available.`;
+  element.textContent = `${total} ${categoryLabel} destinations available.`;
 }

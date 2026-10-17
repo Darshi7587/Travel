@@ -5,6 +5,7 @@ const IMAGE_FALLBACK = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
 function attachImageFallback(image, description) {
   image.onerror = () => {
     image.onerror = null;
+    image.loading = 'eager';
     image.src = IMAGE_FALLBACK;
     image.alt = `${description}; image unavailable, showing a scenic placeholder`;
   };
@@ -36,7 +37,7 @@ export function renderDestinationGrid({ destinations, favorites, onFavoriteToggl
       <button class="favorite-btn ${favorites.has(destination.id) ? 'active' : ''}" type="button" data-favorite-id="${destination.id}" aria-label="Toggle favorite for ${destination.name}">
         <i class="${favorites.has(destination.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
       </button>
-      <img src="${destination.image}" alt="${destination.name}, ${destination.city}, ${destination.country}" loading="lazy" decoding="async" />
+      <img src="${destination.image}" alt="${destination.name} in ${destination.country}" width="1200" height="800" loading="lazy" decoding="async" />
       <div class="card-body">
         <div class="card-header">
           <span class="category-badge">${destination.category}</span>
@@ -65,7 +66,7 @@ export function renderDestinationGrid({ destinations, favorites, onFavoriteToggl
 
     const image = card.querySelector('img');
     if (image) {
-      attachImageFallback(image, `${destination.name}, ${destination.city}, ${destination.country}`);
+      attachImageFallback(image, `${destination.name} in ${destination.country}`);
     }
 
     grid.appendChild(card);
@@ -93,8 +94,8 @@ export function openDestinationModal(destination) {
   category.textContent = destination.category;
   location.textContent = `${destination.city}, ${destination.country}`;
   description.textContent = destination.description;
-  image.alt = `${destination.name} destination photo`;
-  attachImageFallback(image, `${destination.name} destination photo`);
+  image.alt = `${destination.name} in ${destination.country}`;
+  attachImageFallback(image, `${destination.name} in ${destination.country}`);
   image.src = destination.image;
   bestTime.textContent = destination.bestTime;
 
