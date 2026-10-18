@@ -11,9 +11,17 @@ function attachImageFallback(image, description) {
   };
 }
 
-export function renderDestinationGrid({ destinations, favorites, onFavoriteToggle, onViewDetails }) {
-  const grid = document.getElementById('destinations-grid');
-  const emptyState = document.getElementById('empty-state');
+export function renderDestinationGrid({
+  destinations,
+  favorites,
+  onFavoriteToggle,
+  onViewDetails,
+  gridId = 'destinations-grid',
+  emptyStateId = 'empty-state',
+  compact = false,
+}) {
+  const grid = document.getElementById(gridId);
+  const emptyState = document.getElementById(emptyStateId);
 
   if (!grid) return;
 
@@ -32,7 +40,7 @@ export function renderDestinationGrid({ destinations, favorites, onFavoriteToggl
 
   destinations.forEach((destination) => {
     const card = document.createElement('article');
-    card.className = 'destination-card';
+    card.className = `destination-card${compact ? ' compact-destination-card' : ''}`;
     card.innerHTML = `
       <button class="favorite-btn ${favorites.has(destination.id) ? 'active' : ''}" type="button" data-favorite-id="${destination.id}" aria-label="Toggle favorite for ${destination.name}">
         <i class="${favorites.has(destination.id) ? 'fas fa-heart' : 'far fa-heart'}"></i>
@@ -50,7 +58,7 @@ export function renderDestinationGrid({ destinations, favorites, onFavoriteToggl
           <li><i class="fa-solid fa-location-dot"></i>Top sights: ${destination.attractions.slice(0, 2).join(', ')}</li>
         </ul>
         <div class="card-actions">
-          <button class="outline-btn view-details" type="button" data-destination-id="${destination.id}">View Details</button>
+          <button class="outline-btn view-details" type="button" data-destination-id="${destination.id}">${compact ? 'Visit' : 'View Details'}</button>
         </div>
       </div>
     `;

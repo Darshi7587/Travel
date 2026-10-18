@@ -53,6 +53,31 @@
           <a class="nav-link" href="#about">About Us</a>
           <a class="nav-link" href="#contact">Contact Us</a>
         </div>
+
+        <form class="nav-search-form" id="search-form" role="search" aria-label="Search destinations" novalidate>
+          <label class="visually-hidden" for="destination-search">Search destinations</label>
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            id="destination-search"
+            name="destination-search"
+            type="text"
+            placeholder="Search destinations"
+            autocomplete="off"
+            aria-label="Search destinations, cities, countries, or travel interests"
+          />
+          <button type="submit" class="nav-search-btn">Search</button>
+          <button type="button" class="nav-clear-btn" id="clear-search">Clear</button>
+          <details class="nav-search-options">
+            <summary>Interests</summary>
+            <label class="visually-hidden" for="travel-notes">Additional travel interests</label>
+            <textarea
+              id="travel-notes"
+              name="travel-notes"
+              rows="2"
+              placeholder="Add interests, such as quiet beaches or local food"
+            ></textarea>
+          </details>
+        </form>
       </nav>
     </header>
 
@@ -79,48 +104,11 @@
             </div>
           </div>
 
-          <section class="search-panel" aria-labelledby="search-heading">
-            <form id="search-form" role="search" aria-labelledby="search-heading" novalidate>
-              <div class="panel-header">
-                <h2 id="search-heading">Find your next destination</h2>
-              </div>
-
-              <div class="category-picker" aria-label="Select destination category">
-                <button type="button" class="category-btn active" data-category="all">All</button>
-                <button type="button" class="category-btn" data-category="beaches">Beaches</button>
-                <button type="button" class="category-btn" data-category="temples">Temples</button>
-                <button type="button" class="category-btn" data-category="cities">Cities</button>
-              </div>
-
-              <div class="field-group">
-                <label for="destination-search">Destination or location</label>
-                <input
-                  id="destination-search"
-                  name="destination-search"
-                  type="text"
-                  placeholder="Try: Toronto, Canada or Bali"
-                  autocomplete="off"
-                  aria-label="Search destinations, cities, countries, or travel interests"
-                />
-              </div>
-
-              <div class="field-group">
-                <label for="travel-notes">Travel interests (optional)</label>
-                <textarea
-                  id="travel-notes"
-                  name="travel-notes"
-                  rows="3"
-                  placeholder="Famous beaches in India, historical temples, vibrant city culture..."
-                ></textarea>
-              </div>
-
-              <div class="search-actions">
-                <button type="submit" class="primary-btn search-btn" aria-label="Search destinations">Search</button>
-                <button type="button" class="secondary-btn" id="clear-search" aria-label="Clear search">Clear</button>
-              </div>
-
-              <p id="search-feedback" class="search-feedback" aria-live="polite"></p>
-            </form>
+          <section class="hero-results" id="hero-results" aria-label="Search recommendations" hidden>
+            <p class="hero-local-time" id="hero-local-time" aria-live="off"></p>
+            <div class="hero-results-grid" id="hero-destinations-grid" aria-live="polite"></div>
+            <p class="hero-empty-state" id="hero-empty-state" hidden>No destinations found. Try another search.</p>
+            <p id="search-feedback" class="search-feedback" aria-live="polite"></p>
           </section>
         </div>
       </section>

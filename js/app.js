@@ -29,6 +29,9 @@ const categoryLinks = document.querySelectorAll('[data-category-link]');
 const backToTopButton = document.getElementById('back-to-top');
 const modal = document.getElementById('destination-modal');
 const modalFavoriteButton = document.getElementById('modal-favorite-btn');
+const heroResults = document.getElementById('hero-results');
+const heroLocalTime = document.getElementById('hero-local-time');
+let heroTimezone = '';
 
 function updateCategoryButtons() {
   categoryButtons.forEach((button) => {
@@ -63,7 +66,7 @@ function renderResults() {
     favoriteOnly: state.favoriteOnly,
   });
 
-  renderDestinationGrid({
+  const gridOptions = {
     destinations: filtered,
     favorites: state.favorites,
     onFavoriteToggle: (destinationId) => {
@@ -96,10 +99,32 @@ function renderResults() {
         renderResults();
       }, { once: true });
     },
+  };
+
+  renderDestinationGrid(gridOptions);
+  renderDestinationGrid({
+    ...gridOptions,
+    gridId: 'hero-destinations-grid',
+    emptyStateId: 'hero-empty-state',
+    compact: true,
   });
+
+  if (heroResults) {
+    heroResults.hidden = !combinedQuery;
+  }
+  heroTimezone = combinedQuery && filtered.length ? filtered[0].timezone : '';
+  updateHeroLocalTime();
 
   renderStatusMessage(resultStatus, filtered, combinedQuery, state.category, state.favoriteOnly);
   updateCategoryButtons();
+}
+
+function updateHeroLocalTime() {
+  if (!heroLocalTime) return;
+
+  heroLocalTime.textContent = heroTimezone
+    ? `Current Local Time (${heroTimezone}): ${getDestinationTime(heroTimezone)}`
+    : '';
 }
 
 function attachNavigation() {
@@ -260,12 +285,13 @@ function initializeModalBehavior() {
 
 function updateTimeDisplay() {
   const timeLabel = document.getElementById('modal-local-time');
-  if (!timeLabel || !modal?.classList.contains('is-open')) return;
-
-  const destination = DESTINATIONS.find((item) => item.name === document.getElementById('modal-title')?.textContent?.trim());
-  if (destination?.timezone) {
-    timeLabel.textContent = getDestinationTime(destination.timezone);
+  if (timeLabel && modal?.classList.contains('is-open')) {
+    const destination = DESTINATIONS.find((item) => item.name === document.getElementById('modal-title')?.textContent?.trim());
+    if (destination?.timezone) {
+      timeLabel.textContent = getDestinationTime(destination.timezone);
+    }
   }
+  updateHeroLocalTime();
 }
 
 function initializeTimeUpdates() {
